@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1.0, user-scalable=no">
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+	<title>create-student</title>
+</head>
+<body>
+<form id="student-form" method="post">
+	{% csrf_token %}
+	<input type="text" id="studentname" placeholder="studentname"><br>
+	<br>
+	<input type="text" id="rollnumber" placeholder="rollnumber"><br><br>
+	<input type="text" id="phonenumber" placeholder="phonenumber"><br><br>
+	<input type="text" id="studentclass" placeholder="studentclass"><br><br>
+	<button>Add Student</button>
+</form>
+</body>
+<script type="text/javascript">
+	$(document).on('submit','#student-form',function(e){
+		e.preventDefault()
+		$.ajax({
+			type:'POST',
+			url:'/create_student_ajax',
+			data:{
+				studentname:$('#studentname').val(),
+				rollnumber:$('#rollnumber').val(),
+				phonenumber:$('#phonenumber').val(),
+				student_class:$('#studentclass').val(),
+				csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+			},
+			success:function(data){
+				console.log(data.status)
+				$('#studentname').val('')
+				$('#rollnumber').val('')
+				$('#phonenumber').val('')
+
+			}
+		})
+	})
+</script>
+</html>

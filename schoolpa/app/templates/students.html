@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>students</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1.0, user-scalable=no">
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+</head>
+<body>
+<h2>students</h2>
+<input type="hidden" id='cla' name="cla" value="{{stu_class}}">
+<input type="hidden"  id="p">
+
+
+{% csrf_token %}
+<div id="students-box">
+	
+</div>
+</body>
+
+<script type="text/javascript">
+	$(document).on('click','h2',function(e){
+		
+		e.preventDefault();
+		$.ajax({
+			type:'POST',
+			url:'/showstudents',
+			data:{
+				cla:$('#cla').val(),
+				csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+							},
+			success:function(data){
+				$('#students-box').empty();
+				var temp = ''
+				for (var i in data.students)
+				{
+					temp ='<div id="inner-stu-div"><span>'+
+					data.students[i].rollnumber+'.</span><span>'+
+					data.students[i].studentname+
+					'</span><input type="button" value="Present" id="present" data-sid='
+					+data.students[i].id
+
+					+ '><input type="button" value="Absent" id="absent" data-sid='+data.students[i].id+
+
+					 '><input type="button" value="SendMsg" id="sendmsg" data-sid='+
+					data.students[i].id+ '></div>';
+					$('#students-box').append(temp);
+				}
+			}
+		})
+	})
+</script>
+
+
+<script type="text/javascript">
+	//sendmsg form
+	$(document).on('click','#sendmsg',function(){
+		var sid = $(this).attr('data-sid')
+		
+		$.ajax({
+			type:'POST',
+			url:'/sendmsg',
+			data:{
+				sid : sid,
+				csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+
+			},
+			success:function(data){
+				alert(data.status)
+			}
+		})
+	})
+</script>
+
+<script type="text/javascript">
+	//present
+	$(document).on('click','#present',function(){
+		sid = $(this).attr('data-sid')
+		console.log(sid)
+		$('#p').val('present')
+		$.ajax({
+			type:'POST',
+			url:'/student_attendance',
+			data:{
+				sid:$(this).attr('data-sid'),
+				attendance_value :$('#p').val(),
+				csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+
+			},
+			success:function(data){
+				console.log(data.status)
+			}
+		})
+	})
+
+
+	//absent
+	$(document).on('click','#absent',function(){
+		sid = $(this).attr('data-sid')
+		
+		$('#p').val('absent')
+		$.ajax({
+			type:'POST',
+			url:'/student_attendance',
+			data:{
+				sid:$(this).attr('data-sid'),
+				attendance_value :$('#p').val(),
+				csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+
+			},
+			success:function(data){
+				console.log(data.status)
+			}
+		})
+	})
+
+</script>
+</html>
